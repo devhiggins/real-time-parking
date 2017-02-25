@@ -1,5 +1,6 @@
 from time import sleep
 import RPi.GPIO as GPIO
+import requests
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -12,23 +13,21 @@ button2 = 12
 GPIO.setup(button1,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 GPIO.setup(button2,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
-spaces = 500
+# initialize lots
+payload = {"North Springs":500}
+requests.post('http://localhost:8080/api/v1/makeLot', json = payload)
 
 # while we want to collect data
 while(true):
 
         if GPIO.input(button1) == 0:
-            if spaces < 500:
-                 spaces += 1
-				# send increment to server
-                print ("car entered. Spaces available: ", spaces)
+                payload = {"North Springs": 500}
+                requests.post('http://localhost:8080/api/v1/increment', json = payload)
                 sleep(.1)
-            else if spaces == 500:
-                print("lot is full")
-
+                # send increment to server
+        
         if GPIO.input(button2) == 0:
-            if spaces > 0:
-                spaces -= 1
+                payload = {"North Springs":500}
                 # send decrement to server
-                print ("car exited. Spaces available: ", spaces)
+                requests.post('http://localhost:8080/api/v1/decrement', json = payload)
                 sleep(.1)
