@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import sqlite3
 import time, datetime
+import requests
 
 current_time = "2017-02-25 11:35:47"
 GPIO.setmode(GPIO.BOARD)
@@ -25,13 +26,18 @@ while(True):
     if GPIO.input(buttonA) == 0:
         c.execute('''UPDATE parking_info SET open_spaces = open_spaces + 1''')
         c.execute("SELECT * FROM parking_info")
-        print(c.fetchone())
+        fetch = c.fetchone()
+        print(fetch)
+        payload = {fetch[0]:fetch[1]}
+        requests.post("http://192.168.0.58:8080/api/v1/updateLot", json = payload)
         time.sleep(1)
 
     if GPIO.input(buttonB) == 0:
         c.execute('''UPDATE parking_info SET open_spaces = open_spaces - 1''')
         c.execute("SELECT * FROM parking_info")
         print(c.fetchone())
+        payload = {fetch[0]:fetch[1]}
+        requests.post("http://192.168.0.58:8080/api/v1/updateLot", json = payload)
         time.sleep(1)
 
     
